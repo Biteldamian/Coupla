@@ -1,0 +1,19 @@
+type UserId = principal;
+type CellId = nat;
+type Cell = 
+ record {
+   bookedBy: opt UserId;
+   dateEndBooking: text;
+   dateStartBooking: text;
+   id: CellId;
+   isBooked: bool;
+   price: nat;
+ };
+service : {
+  bookCell: (UserId, CellId, text) -> (bool);
+  checkCell: (CellId) -> (opt Cell) query;
+  getCellDetails: (CellId) -> (opt Cell) query;
+  listCells: () -> (vec Cell) query;
+  registerUser: (principal) -> (bool);
+  updateCellEndDate: (CellId, text) -> (bool);
+}

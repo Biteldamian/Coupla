@@ -1,0 +1,26 @@
+{
+  "canisters": {
+    "cupolaxs_blockchain_backend": {
+      "main": "src/cupolaxs_blockchain_backend/main.mo",
+      "type": "motoko"
+    },
+    "cupolaxs_blockchain_frontend": {
+      "dependencies": [
+        "cupolaxs_blockchain_backend"
+      ],
+      "source": [
+        "src/cupolaxs_blockchain_frontend/dist"
+      ],
+      "type": "assets",
+      "workspace": "cupolaxs_blockchain_frontend"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
