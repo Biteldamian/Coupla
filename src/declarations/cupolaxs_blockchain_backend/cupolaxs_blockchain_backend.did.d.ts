@@ -2,8 +2,13 @@ import type { Principal } from '@dfinity/principal';
 import type { ActorMethod } from '@dfinity/agent';
 import type { IDL } from '@dfinity/candid';
 
+export type BookingStatus = { 'canceled' : null } |
+  { 'pending' : null } |
+  { 'completed' : null } |
+  { 'confirmed' : null };
 export interface Cell {
   'id' : CellId,
+  'status' : BookingStatus,
   'bookedBy' : [] | [UserId],
   'dateEndBooking' : string,
   'dateStartBooking' : string,
@@ -13,11 +18,22 @@ export interface Cell {
 export type CellId = bigint;
 export type UserId = Principal;
 export interface _SERVICE {
-  'bookCell' : ActorMethod<[UserId, CellId, string], boolean>,
+  'addCell' : ActorMethod<[Cell], undefined>,
+  'addUser' : ActorMethod<[Principal], undefined>,
+  'bookCell' : ActorMethod<[UserId, CellId, bigint], boolean>,
   'checkCell' : ActorMethod<[CellId], [] | [Cell]>,
+  'deployAll' : ActorMethod<[], undefined>,
+  'deployApp' : ActorMethod<[], undefined>,
+  'deployBalances' : ActorMethod<[], undefined>,
   'getCellDetails' : ActorMethod<[CellId], [] | [Cell]>,
+  'isReady' : ActorMethod<[], boolean>,
   'listCells' : ActorMethod<[], Array<Cell>>,
+  'makePayment' : ActorMethod<[UserId, UserId, bigint], boolean>,
   'registerUser' : ActorMethod<[Principal], boolean>,
+  'removeCell' : ActorMethod<[bigint], undefined>,
+  'removeUser' : ActorMethod<[Principal], undefined>,
+  'setBalance' : ActorMethod<[UserId, bigint], boolean>,
+  'setCell' : ActorMethod<[Cell], undefined>,
   'updateCellEndDate' : ActorMethod<[CellId, string], boolean>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

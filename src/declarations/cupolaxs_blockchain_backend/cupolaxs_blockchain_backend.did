@@ -8,12 +8,31 @@ type Cell =
    id: CellId;
    isBooked: bool;
    price: nat;
+   status: BookingStatus;
+ };
+type BookingStatus = 
+ variant {
+   canceled;
+   completed;
+   confirmed;
+   pending;
  };
 service : {
-  bookCell: (UserId, CellId, text) -> (bool);
+  addCell: (Cell) -> ();
+  addUser: (principal) -> ();
+  bookCell: (UserId, CellId, int) -> (bool);
   checkCell: (CellId) -> (opt Cell) query;
+  deployAll: () -> ();
+  deployApp: () -> ();
+  deployBalances: () -> ();
   getCellDetails: (CellId) -> (opt Cell) query;
+  isReady: () -> (bool) query;
   listCells: () -> (vec Cell) query;
+  makePayment: (UserId, UserId, nat) -> (bool);
   registerUser: (principal) -> (bool);
+  removeCell: (nat) -> ();
+  removeUser: (principal) -> ();
+  setBalance: (UserId, nat) -> (bool);
+  setCell: (Cell) -> ();
   updateCellEndDate: (CellId, text) -> (bool);
 }
