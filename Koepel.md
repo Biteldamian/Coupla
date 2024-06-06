@@ -6,7 +6,7 @@
 4. **Scalability**: Leverage the ICP chain's scalability to handle high volumes of bookings and transactions efficiently.
 5. **Interoperability**: Integrate with other blockchain networks and applications through the ICP chain's interoperability features.
 6. **Identity Management**: Implement Internet Identity for secure user authentication and authorization.
-7. **Real-time Updates**: Utilize the ICP chain's real-time updates to keep the booking system up-to-date and responsive.
+7. **Real-time Updates**: Utilize the ICP chain's real-time updates to keep the booking system up-to-date and responsive.h
 8. **Data Privacy**: Protect sensitive information related to bookings and personal data using the ICP chain's encryption and privacy features.
 9. **Disaster Recovery**: Benefit from the ICP chain's resilience and redundancy, ensuring data availability even in case of disasters or outages.
 10. **Cost Efficiency**: Reduce operational costs by eliminating the need for centralized servers and intermediaries.
