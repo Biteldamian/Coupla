@@ -27,9 +27,11 @@ service : {
   deployBalances: () -> ();
   deposit_cycles: () -> ();
   getCellDetails: (CellId) -> (opt Cell) query;
+  getTokenBalance: (UserId) -> (nat);
   isReady: () -> (bool) query;
   listCells: () -> (vec Cell) query;
   makePayment: (UserId, UserId, nat) -> (bool);
+  mintTokens: (UserId, nat) -> (bool);
   registerUser: (principal) -> (bool);
   removeCell: (nat) -> ();
   removeUser: (principal) -> ();

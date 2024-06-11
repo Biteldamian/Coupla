@@ -4,6 +4,7 @@ import environment from 'vite-plugin-environment';
 import vue from '@vitejs/plugin-vue';
 import dotenv from 'dotenv';
 
+
 dotenv.config({ path: '../../.env' });
 
 export default defineConfig({
@@ -39,4 +40,5 @@ export default defineConfig({
       { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
     ]
   }
+  
 });

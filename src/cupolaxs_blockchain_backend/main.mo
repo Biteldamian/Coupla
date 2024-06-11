@@ -11,6 +11,8 @@ import Balances "/Balances";
 import Types "/Types";
 import Icrc1 "mo:icrc1/ICRC1";
 import ExperimentalCycles "mo:base/ExperimentalCycles";
+import Nat "mo:base/Nat";
+import Bool "mo:base/Bool";
 
 
 
@@ -36,7 +38,7 @@ actor {
   var app : ?App = null;
   var balances : ?Balances = null;
   
-       // Performs initial setup operations by instantiating the Balances and App canisters
+    // Performs initial setup operations by instantiating the Balances and App canisters
     public shared(msg) func deployBalances() : async () {
         switch (balances) {
             case (?bal) Debug.print("Balances already deployed");
@@ -52,6 +54,8 @@ actor {
                 let accepted = ExperimentalCycles.accept<system>(requiredCycles);
                 assert (accepted == requiredCycles);
                 Debug.print("Accepted required cycles for Balances deployment");
+                
+                // Attach cycles to the canister creation call
                 let tempBalances = await Balances.Balances({
                     name = "MyToken";
                     symbol = "MTK";
@@ -64,9 +68,10 @@ actor {
                     advanced_settings = null;
                     max_supply = 1_000_000_000_000_000_000; // Example max supply
                     min_burn_amount = 0; // Example min burn amount
-                });
+                },); // Attach the accepted cycles here
                 balances := ?tempBalances;
                 Debug.print("Balances deployed successfully");
+                Debug.print(debug_show(accepted));
             };
         }
     };
@@ -125,12 +130,12 @@ actor {
 
 
     private var cells: [Cell] = [
-        { id = 1; isBooked = false; bookedBy = null; price = 0; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
-        { id = 2; isBooked = false; bookedBy = null; price = 0; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
-        { id = 3; isBooked = false; bookedBy = null; price = 0; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
-        { id = 4; isBooked = false; bookedBy = null; price = 0; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
-        { id = 5; isBooked = false; bookedBy = null; price = 0; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
-        { id = 6; isBooked = false; bookedBy = null; price = 0; dateStartBooking = ""; dateEndBooking = ""; status = #pending }
+        { id = 1; isBooked = false; bookedBy = null; price = 1; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
+        { id = 2; isBooked = false; bookedBy = null; price = 5; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
+        { id = 3; isBooked = false; bookedBy = null; price = 1; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
+        { id = 4; isBooked = false; bookedBy = null; price = 1; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
+        { id = 5; isBooked = false; bookedBy = null; price = 1; dateStartBooking = ""; dateEndBooking = ""; status = #pending },
+        { id = 6; isBooked = false; bookedBy = null; price = 1; dateStartBooking = ""; dateEndBooking = ""; status = #pending }
     ];
     private var users: [UserId] = [];
     
@@ -143,23 +148,30 @@ actor {
          };
          return false;
      };
-   public func bookCell(user: UserId, id: CellId, startBookingDate: Int): async Bool {
+    public func bookCell(user: UserId, id: CellId, startBookingDate: Int): async Bool {
+        Debug.print("Attempting to book cell with ID: " # Nat.toText(id) # " for user: " # Principal.toText(user));
         var found = false;
         cells := Array.map(cells, func(c : Cell) : Cell {
             if (c.id == id and c.status == #pending) {
                 found := true;
+                Debug.print("Cell found and booking...");
                 return {
-                id = c.id;
-                isBooked = true;
-                bookedBy = ?user;
-                price = c.price;
-                dateStartBooking = "";
-                dateEndBooking = ""; // Reset end booking date
-                status = #confirmed;
-            };
+                    id = c.id;
+                    isBooked = true;
+                    bookedBy = ?user;
+                    price = c.price;
+                    dateStartBooking = "";
+                    dateEndBooking = ""; // Reset end booking date
+                    status = #confirmed;
+                };
             };
             return c;
         });
+        if (found) {
+            Debug.print("Cell booked successfully");
+        } else {
+            Debug.print("Cell not found or already booked");
+        };
         return found;
     };
 
@@ -260,6 +272,25 @@ actor {
                 }
             }
             };
+
+    // Function to mint tokens to a user's wallet
+    public func mintTokens(user: UserId, amount: Nat): async Bool {
+        return await setBalance(user, amount);
+    };
+
+    // Function to get token balance for a user
+    public func getTokenBalance(user: UserId): async Nat {
+        switch (balances) {
+            case (?bal) {
+                let balance = await bal.icrc1_balance_of({ owner = user; subaccount = null });
+                return balance;
+            };
+            case (_) {
+                Debug.print("Balances not deployed");
+                return 0;
+            };
+        }
+    };
 
   // Function to make a payment from one user to another
     public func makePayment(from: UserId, to: UserId, amount: Nat): async Bool {
