@@ -1,59 +1,112 @@
+Certainly! Let's include the details about `Balances.mo` and `App.mo` in the README.
+
 # Cupolaxs_blockchain
 
-Welcome to your new Cupolaxs_blockchain project and to the internet computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+Welcome to the Cupolaxs_blockchain project! This README will guide you through the project structure, setup, and functionality of the codebase. By following this guide, you will understand how to work with the project, deploy it locally, and utilize its various functions.
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+## Project Structure
 
-To learn more before you start working with Cupolaxs_blockchain, see the following documentation available online:
+The project is organized into several directories and files:
+
+- `src/`: Contains the source code for the backend and frontend.
+  - `cupolaxs_blockchain_backend/`: Contains the Motoko code for the backend.
+    - `main.mo`: The main Motoko file for the backend logic.
+    - `Balances.mo`: Contains the logic for managing token balances.
+    - `App.mo`: Contains the application logic for handling user interactions and payments.
+  - `cupolaxs_blockchain_frontend/`: Contains the frontend code.
+    - `index.html`: The main HTML file for the frontend.
+    - `package.json`: The package configuration file for the frontend.
+    - `postcss.config.js`: PostCSS configuration.
+    - `tailwind.config.js`: Tailwind CSS configuration.
+    - `tsconfig.json`: TypeScript configuration.
+    - `vite.config.js`: Vite configuration for the frontend.
+- `dfx.json`: The DFX configuration file.
+- `package.json`: The package configuration file for the project.
+- `README.md`: This README file.
+- `tsconfig.json`: TypeScript configuration for the project.
+
+## Setup
+
+To get started with the project, follow these steps:
+
+1. **Install DFX SDK**: Follow the [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install) guide to install the DFX SDK.
+
+2. **Clone the Repository**: Clone the project repository to your local machine.
+
+3. **Navigate to the Project Directory**:
+   ```bash
+   cd Cupolaxs_blockchain/
+   ```
+
+4. **Install Dependencies**: Install the necessary dependencies for the frontend.
+   ```bash
+   npm install
+   ```
+
+## Running the Project Locally
+
+To test the project locally, use the following commands:
+
+1. **Start the Replica**: Start the Internet Computer replica in the background.
+   ```bash
+   dfx start --background
+   ```
+
+2. **Deploy Canisters**: Deploy your canisters to the replica and generate the candid interface.
+   ```bash
+   dfx deploy
+   ```
+
+   Once the deployment is complete, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+
+3. **Generate Candid Interface**: If you make changes to your backend canister, generate a new candid interface.
+   ```bash
+   npm run generate
+   ```
+
+4. **Start Frontend Development Server**: If you are making frontend changes, start the development server.
+   ```bash
+   npm start
+   ```
+
+   This will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
+
+## Functions and Their Usage
+
+### Backend Functions
+
+The backend is written in Motoko and provides several functions for managing balances, booking cells, and handling payments.
+
+- **deployBalances**: Deploys the Balances canister if not already deployed.
+- **deposit_cycles**: Deposits available cycles into the canister.
+- **deployApp**: Deploys the App canister if the Balances canister is ready.
+- **deployAll**: Initiates the deployment of both Balances and App canisters.
+- **isReady**: Checks if both Balances and App canisters are deployed.
+- **registerUser**: Registers a new user.
+- **bookCell**: Books a cell for a user.
+- **updateCellEndDate**: Updates the end date of a booked cell.
+- **checkCell**: Checks the details of a specific cell.
+- **listCells**: Lists all cells.
+- **removeCell**: Removes a cell by its ID.
+- **addCell**: Adds a new cell.
+- **getCellDetails**: Retrieves the details of a specific cell.
+- **setCell**: Updates the details of a specific cell.
+- **removeUser**: Removes a user by their ID.
+- **addUser**: Adds a new user.
+- **setBalance**: Sets the balance for a user.
+- **makePayment**: Makes a payment from one user to another.
+
+### Frontend
+
+The frontend is built using modern web technologies and is configured to work seamlessly with the backend canisters. It provides a user interface for interacting with the blockchain functionalities.
+
+## Additional Resources
+
+To learn more about developing on the Internet Computer, refer to the following documentation:
 
 - [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
 - [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
 - [Motoko Programming Language Guide](https://internetcomputer.org/docs/current/motoko/main/motoko)
 - [Motoko Language Quick Reference](https://internetcomputer.org/docs/current/motoko/main/language-manual)
 
-If you want to start working on your project right away, you might want to try the following commands:
-
-```bash
-cd Cupolaxs_blockchain/
-dfx help
-dfx canister --help
-```
-
-## Running the project locally
-
-If you want to test your project locally, you can use the following commands:
-
-```bash
-# Starts the replica, running in the background
-dfx start --background
-
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
-```
-
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
-
-If you have made changes to your backend canister, you can generate a new candid interface with
-
-```bash
-npm run generate
-```
-
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
-
-If you are making frontend changes, you can start a development server with
-
-```bash
-npm start
-```
-
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
-
-### Note on frontend environment variables
-
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
-
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
+By following this guide, you should be able to set up, run, and understand the Cupolaxs_blockchain project. Happy coding!
