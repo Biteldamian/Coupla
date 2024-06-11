@@ -82,7 +82,7 @@ module {
   // General Error type
   public type Error = {
     #userNotFound;
-    #insufficientBalance;
+    #insufficientBalance; 
     #bookingNotFound;
     #paymentNotFound;
     #invalidOperation;

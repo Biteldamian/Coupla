@@ -15,10 +15,20 @@
       "workspace": "cupolaxs_blockchain_frontend"
     }
   },
+  "icrc1_ledger": {
+    "type": "custom",
+    "candid": "src/declarations/icrc1_ledger/icrc1_ledger.did",
+    "wasm": "https://download.dfinity.systems/ic/95787355499f3be929f2ab302ed44cdad7c64061/canisters/ic-icrc1-ledger.wasm.gz"
+  },
+  "icrc1_index": {
+    "type": "custom",
+    "candid": "src/declarations/icrc1_index/icrc1_index.did",
+    "wasm": "https://download.dfinity.systems/ic/95787355499f3be929f2ab302ed44cdad7c64061/canisters/ic-icrc1-index.wasm.gz"
+  },
   "defaults": {
     "build": {
       "args": "",
-      "packtool": ""
+      "packtool": "mops sources"
     }
   },
   "output_env_file": ".env",
