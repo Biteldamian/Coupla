@@ -19,7 +19,7 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     'addCell' : IDL.Func([Cell], [], []),
     'addUser' : IDL.Func([IDL.Principal], [], []),
-    'bookCell' : IDL.Func([UserId, CellId, IDL.Int], [IDL.Bool], []),
+    'bookCell' : IDL.Func([IDL.Principal, IDL.Nat, IDL.Text], [IDL.Bool], []),
     'checkCell' : IDL.Func([CellId], [IDL.Opt(Cell)], ['query']),
     'deployAll' : IDL.Func([], [], []),
     'deployApp' : IDL.Func([], [], []),
@@ -29,6 +29,7 @@ export const idlFactory = ({ IDL }) => {
     'getTokenBalance' : IDL.Func([UserId], [IDL.Nat], []),
     'isReady' : IDL.Func([], [IDL.Bool], ['query']),
     'listCells' : IDL.Func([], [IDL.Vec(Cell)], ['query']),
+    'listUsers' : IDL.Func([], [IDL.Vec(UserId)], ['query']),
     'makePayment' : IDL.Func([UserId, UserId, IDL.Nat], [IDL.Bool], []),
     'mintTokens' : IDL.Func([UserId, IDL.Nat], [IDL.Bool], []),
     'registerUser' : IDL.Func([IDL.Principal], [IDL.Bool], []),

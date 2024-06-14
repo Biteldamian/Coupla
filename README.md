@@ -1,8 +1,4 @@
-Certainly! Let's include the details about `Balances.mo` and `App.mo` in the README.
 
-# Cupolaxs_blockchain
-
-Welcome to the Cupolaxs_blockchain project! This README will guide you through the project structure, setup, and functionality of the codebase. By following this guide, you will understand how to work with the project, deploy it locally, and utilize its various functions.
 
 ## Project Structure
 
@@ -71,38 +67,113 @@ To test the project locally, use the following commands:
 
    This will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
 
-## Functions and Their Usage
+## Tech Stack
 
-### Backend Functions
+- **Motoko**: The primary programming language used for the backend.
+- **Node.js**: Used for managing dependencies and running scripts.
+- **dfx**: The DFINITY SDK for deploying and managing canisters on the Internet Computer.
+- **Tailwind CSS**: For styling the frontend.
+- **Vite**: A build tool for the frontend.
 
-The backend is written in Motoko and provides several functions for managing balances, booking cells, and handling payments.
+## User Stories Implemented
 
-- **deployBalances**: Deploys the Balances canister if not already deployed.
-- **deposit_cycles**: Deposits available cycles into the canister.
-- **deployApp**: Deploys the App canister if the Balances canister is ready.
-- **deployAll**: Initiates the deployment of both Balances and App canisters.
-- **isReady**: Checks if both Balances and App canisters are deployed.
-- **registerUser**: Registers a new user.
-- **bookCell**: Books a cell for a user.
-- **updateCellEndDate**: Updates the end date of a booked cell.
-- **checkCell**: Checks the details of a specific cell.
-- **listCells**: Lists all cells.
-- **removeCell**: Removes a cell by its ID.
-- **addCell**: Adds a new cell.
-- **getCellDetails**: Retrieves the details of a specific cell.
-- **setCell**: Updates the details of a specific cell.
-- **removeUser**: Removes a user by their ID.
-- **addUser**: Adds a new user.
-- **setBalance**: Sets the balance for a user.
-- **makePayment**: Makes a payment from one user to another.
+1. **User Registration**: Users can register with the system.
+2. **Cell Booking**: Users can book cells.
+3. **Balance Management**: Users can have their balances set and queried.
+4. **Cell Management**: Admins can add, remove, and update cells.
+5. **Cycle Management**: The system can deposit and manage cycles.
 
-### Frontend
+## Setup Instructions
 
-The frontend is built using modern web technologies and is configured to work seamlessly with the backend canisters. It provides a user interface for interacting with the blockchain functionalities.
+### Prerequisites
 
-## Additional Resources
+- Node.js and npm installed
+- dfx (DFINITY SDK) installed
 
-To learn more about developing on the Internet Computer, refer to the following documentation:
+### Step-by-Step Setup
+
+1. **Install Dependencies**
+
+   Navigate to the project directory and run:
+
+   ```bash
+   npm install
+   ```
+
+2. **Deploy the Application**
+
+   Run the deployment script to set up the canisters and deploy the application:
+
+   ```bash
+   ./deploy.sh
+   ```
+
+3. **Test the Functions**
+
+   Run the test script to ensure all functions are working as expected:
+
+   ```bash
+   sudo ./test.sh
+   ```
+
+4. **Interact with the Backend**
+
+   Use the main script to interact with the backend:
+
+   ```bash
+   ./main.sh
+   ```
+
+## Current Status
+
+### Fully Implemented and Working Functions
+
+- **User Registration**: Users can register successfully.
+- **Cell Booking**: Users can book cells, and the system deducts the appropriate balance.
+- **Balance Management**: Users can have their balances set and queried.
+- **Cell Management**: Admins can add, remove, and update cells.
+- **Cycle Management**: The system can deposit and manage cycles.
+
+### Functions in Debug Mode
+
+- **Transfer Between Users**: The function to transfer tokens between users is still under debugging. The `makePayment` function is implemented but may require further testing and validation.
+
+## Documentation
+
+### User Registration
+
+- **Function**: `registerUser(user: Principal): async Bool`
+- **Description**: Registers a new user if they are not already registered.
+
+### Cell Booking
+
+- **Function**: `bookCell(userId: Principal, cellId: Nat, dateStart: Text): async Bool`
+- **Description**: Books a cell for a user if the cell is available and the user has sufficient balance.
+
+### Balance Management
+
+- **Function**: `setBalance(user: UserId, amount: Nat): async Bool`
+- **Description**: Sets the balance for a user.
+- **Function**: `getTokenBalance(user: UserId): async Nat`
+- **Description**: Retrieves the token balance for a user.
+
+### Cell Management
+
+- **Function**: `addCell(cell: Cell): async ()`
+- **Description**: Adds a new cell to the system.
+- **Function**: `removeCell(cellId: Nat): async ()`
+- **Description**: Removes a cell from the system.
+- **Function**: `updateCellEndDate(id: CellId, newEndDate: Text): async Bool`
+- **Description**: Updates the end date of a cell booking.
+
+### Cycle Management
+
+- **Function**: `deposit_cycles(): async ()`
+- **Description**: Deposits cycles into the canister.
+
+
+
+
 
 - [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
 - [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)

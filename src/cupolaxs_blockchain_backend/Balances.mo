@@ -3,7 +3,7 @@ import ExperimentalCycles "mo:base/ExperimentalCycles";
 import Icrc1 "mo:icrc1/ICRC1";
 import Types "/Types";
 import Debug "mo:base/Debug";
-
+import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Nat8 "mo:base/Nat8";
 
@@ -85,19 +85,19 @@ shared ({ caller = _owner }) actor class Balances(
     // Deposit cycles into this canister.
     public shared func deposit_cycles() : async () {
         let amount = ExperimentalCycles.available();
-        Debug.print("Attempting to deposit cycles:");
+        Debug.print("BALANCES: Attempting to deposit cycles:");
         Debug.print(debug_show(amount));
         if (amount == 0) {
-            Debug.print("No cycles available to deposit. Please send cycles to the canister.");
+            Debug.print("BALANCES: No cycles available to deposit. Please send cycles to the canister.");
             return;
         };
         let accepted = ExperimentalCycles.accept<system>(amount);
         if (accepted == amount) {
-            Debug.print("Deposited cycles successfully");
+            Debug.print("BALANCES: Deposited cycles successfully");
         } else {
-            Debug.print("Failed to deposit cycles");
+            Debug.print("BALANCES: Failed to deposit cycles");
         };
-        Debug.print("Accepted cycles:");
+        Debug.print("BALANCES: Accepted cycles:");
         Debug.print(debug_show(accepted));
     };
 

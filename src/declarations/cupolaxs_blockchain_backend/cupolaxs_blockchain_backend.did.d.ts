@@ -20,7 +20,7 @@ export type UserId = Principal;
 export interface _SERVICE {
   'addCell' : ActorMethod<[Cell], undefined>,
   'addUser' : ActorMethod<[Principal], undefined>,
-  'bookCell' : ActorMethod<[UserId, CellId, bigint], boolean>,
+  'bookCell' : ActorMethod<[Principal, bigint, string], boolean>,
   'checkCell' : ActorMethod<[CellId], [] | [Cell]>,
   'deployAll' : ActorMethod<[], undefined>,
   'deployApp' : ActorMethod<[], undefined>,
@@ -30,6 +30,7 @@ export interface _SERVICE {
   'getTokenBalance' : ActorMethod<[UserId], bigint>,
   'isReady' : ActorMethod<[], boolean>,
   'listCells' : ActorMethod<[], Array<Cell>>,
+  'listUsers' : ActorMethod<[], Array<UserId>>,
   'makePayment' : ActorMethod<[UserId, UserId, bigint], boolean>,
   'mintTokens' : ActorMethod<[UserId, bigint], boolean>,
   'registerUser' : ActorMethod<[Principal], boolean>,

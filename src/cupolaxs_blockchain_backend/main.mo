@@ -41,21 +41,22 @@ actor {
     // Performs initial setup operations by instantiating the Balances and App canisters
     public shared(msg) func deployBalances() : async () {
         switch (balances) {
-            case (?bal) Debug.print("Balances already deployed");
+            case (?bal) Debug.print("MAIN: Balances already deployed");
             case (_) {
                 let requiredCycles = 7_692_307_692; // Example required cycles for canister creation
                 let availableCycles = ExperimentalCycles.available();
                 Debug.print("Available cycles:");
                 Debug.print(debug_show(availableCycles));
                 if (availableCycles < requiredCycles) {
-                    Debug.print("Not enough cycles. Please deposit more cycles.");
+                    Debug.print("MAIN: Not enough cycles. Please deposit more cycles.");
                     return;
                 };
                 let accepted = ExperimentalCycles.accept<system>(requiredCycles);
                 assert (accepted == requiredCycles);
-                Debug.print("Accepted required cycles for Balances deployment");
+                Debug.print("MAIN: Accepted required cycles for Balances deployment");
                 
                 // Attach cycles to the canister creation call
+                ExperimentalCycles.add(200_000_000_000);
                 let tempBalances = await Balances.Balances({
                     name = "MyToken";
                     symbol = "MTK";
@@ -70,7 +71,7 @@ actor {
                     min_burn_amount = 0; // Example min burn amount
                 },); // Attach the accepted cycles here
                 balances := ?tempBalances;
-                Debug.print("Balances deployed successfully");
+                Debug.print("MAIN: Balances deployed successfully");
                 Debug.print(debug_show(accepted));
             };
         }
@@ -78,30 +79,32 @@ actor {
     // Deposit cycles into this canister.
        public shared func deposit_cycles() : async () {
         let amount = ExperimentalCycles.available();
-        Debug.print("Attempting to deposit cycles:");
+        Debug.print("MAIN: Attempting to deposit cycles:");
         Debug.print(debug_show(amount));
         if (amount == 0) {
-            Debug.print("No cycles available to deposit. Please send cycles to the canister.");
+            Debug.print("MAIN: No cycles available to deposit. Please send cycles to the canister.");
             return;
         };
         let accepted = ExperimentalCycles.accept<system>(amount);
+        ExperimentalCycles.add(200_000_000_000);
         if (accepted == amount) {
-            Debug.print("Deposited cycles successfully");
+            Debug.print("MAIN: Deposited cycles successfully");
         } else {
-            Debug.print("Failed to deposit cycles");
+            Debug.print("MAIN: Failed to deposit cycles");
         };
-        Debug.print("Accepted cycles:");
+        Debug.print("MAIN: Accepted cycles:");
         Debug.print(debug_show(accepted));
     };
 
     public func deployApp() : async () {
+         ExperimentalCycles.add(200_000_000_000);
             switch (app, balances) {
-                case (?a, _) Debug.print("Already deployed");
-                case (_, null) Debug.print("Should call deployBalances() first");
+                case (?a, _) Debug.print("MAIN: Already deployed");
+                case (_, null) Debug.print("MAIN: Should call deployBalances() first");
                 case (_, ?bal) {
                     let tempApp = await App.App(Principal.fromActor(bal));
                     app := ?tempApp;
-                    Debug.print("App deployed successfully");
+                    Debug.print("MAIN: App deployed successfully");
                 };
             }
         };
@@ -110,12 +113,12 @@ actor {
         public func deployAll() : async () {
             ignore async {
                 await deployBalances();
-                Debug.print("Deploying Balances");
+                Debug.print("MAIN: Deploying Balances");
                 if (await isReady()) {
                     await deployApp(); // requires Balances
-                    Debug.print("Deploying App");
+                    Debug.print("MAIN: Deploying App");
                 } else {
-                    Debug.print("Balances deployment failed or not ready");
+                    Debug.print("MAIN: Balances deployment failed or not ready");
                 }
             };
         };
@@ -139,42 +142,57 @@ actor {
     ];
     private var users: [UserId] = [];
     
-    public func registerUser(user: Principal): async Bool {
-         // Check if user already exists
-         if (Array.find(users, func(u: UserId): Bool { return u == user; }) == null) {
-             // Use Array.append for clarity
-             users := Array.append(users, [user]);
-             return true;
-         };
-         return false;
-     };
-    public func bookCell(user: UserId, id: CellId, startBookingDate: Int): async Bool {
-        Debug.print("Attempting to book cell with ID: " # Nat.toText(id) # " for user: " # Principal.toText(user));
-        var found = false;
-        cells := Array.map(cells, func(c : Cell) : Cell {
-            if (c.id == id and c.status == #pending) {
-                found := true;
-                Debug.print("Cell found and booking...");
-                return {
-                    id = c.id;
+  public func registerUser(user: Principal): async Bool {
+    Debug.print("MAIN: Attempting to register user: " # Principal.toText(user));
+    // Check if user already exists
+    if (Array.find(users, func(u: UserId): Bool { return u == user; }) == null) {
+        // Use Array.append for clarity
+        users := Array.append(users, [user]);
+        Debug.print("MAIN: User registered successfully: " # Principal.toText(user));
+        return true;
+    } else {
+        Debug.print("MAIN: User already registered: " # Principal.toText(user));
+    };
+    return false;
+};
+     
+public func bookCell(userId: Principal, cellId: Nat, dateStart: Text): async Bool {
+    let cellOpt = Array.find(cells, func(c: Cell): Bool { return c.id == cellId });
+    switch (cellOpt) {
+        case (?cell) {
+            if (cell.isBooked) {
+                Debug.print("MAIN: Cell not found or already booked");
+                return false;
+            } else {
+                // Deduct the cell price from the user's balance
+                let price = cell.price;
+                let paymentResult = await makePayment(userId, Principal.fromText("your-canister-principal"), price);
+                if (not paymentResult) {
+                    Debug.print("MAIN: Payment failed");
+                    return false;
+                };
+
+                // Update the cell booking details
+                let updatedCell = {
+                    id = cell.id;
                     isBooked = true;
-                    bookedBy = ?user;
-                    price = c.price;
-                    dateStartBooking = "";
-                    dateEndBooking = ""; // Reset end booking date
+                    bookedBy = ?userId;
+                    price = cell.price;
+                    dateStartBooking = dateStart;
+                    dateEndBooking = cell.dateEndBooking;
                     status = #confirmed;
                 };
-            };
-            return c;
-        });
-        if (found) {
-            Debug.print("Cell booked successfully");
-        } else {
-            Debug.print("Cell not found or already booked");
+                await setCell(updatedCell);
+                Debug.print("MAIN: Cell booked successfully");
+                return true;
+            }
         };
-        return found;
-    };
-
+        case (_) {
+            Debug.print("MAIN: Cell not found or already booked");
+            return false;
+        }
+    }
+};
 
 
     public func updateCellEndDate(id: CellId, newEndDate: Text): async Bool {
@@ -198,7 +216,8 @@ actor {
       };
 
     
-    public query func checkCell(id: CellId): async ?Cell {
+    public query func checkCell
+    (id: CellId): async ?Cell {
         return Array.find(cells, func(c : Cell) : Bool { c.id == id });
     };
 
@@ -227,6 +246,8 @@ actor {
         });
     };
 
+    
+
     public func removeUser(userId: Principal): async () { 
         users := Array.filter(users, func(u : UserId) : Bool { u!= userId });
         };
@@ -247,7 +268,7 @@ actor {
                 let result = await bal.mint(mintArgs);
                     switch (result) {
                         case (#Ok(_)){
-                            Debug.print("Mint succesful");
+                            Debug.print("MAIN: Mint succesful");
                             return true;
                         };
                         case (#Err(err)) {
@@ -261,13 +282,13 @@ actor {
                                 case (#TemporarilyUnavailable) "Temporarily unavailable";
                                 case (#TooOld) "Too old";
                             };
-                            Debug.print("Mint error: " # errorMessage);
+                            Debug.print("MAIN: Mint error: " # errorMessage);
                             return false;
                         };
                     }
                 };
                 case (_) {
-                    Debug.print("Balances not initialized");
+                    Debug.print("MAIN: Balances not initialized");
                     return false;
                 }
             }
@@ -278,11 +299,12 @@ actor {
         return await setBalance(user, amount);
     };
 
-    // Function to get token balance for a user
     public func getTokenBalance(user: UserId): async Nat {
+        Debug.print("MAIN: Getting token balance for user: " # Principal.toText(user));
         switch (balances) {
             case (?bal) {
                 let balance = await bal.icrc1_balance_of({ owner = user; subaccount = null });
+                Debug.print("MAIN: Token balance for user " # Principal.toText(user) # " is " # Nat.toText(balance));
                 return balance;
             };
             case (_) {
@@ -292,34 +314,41 @@ actor {
         }
     };
 
+
   // Function to make a payment from one user to another
-    public func makePayment(from: UserId, to: UserId, amount: Nat): async Bool {
+        public func makePayment(from: UserId, to: UserId, amount: Nat): async Bool {
         switch (app) {
             case (?a) {
-                let result = await a.payment(from, amount);
+                let result = await a.payment(from, to, amount); // Include the 'to' parameter in the payment call
                 switch (result) {
                     case (#ok) {
-                        Debug.print("Payment successful");
+                        Debug.print("MAIN: Payment successful");
                         return true;
                     };
                     case (#err(err)) {
                         let errorMessage = switch (err) {
-                            case (#bookingNotFound) "Booking not found";
                             case (#insufficientBalance) "Insufficient balance";
                             case (#invalidOperation) "Invalid operation";
-                            case (#paymentNotFound) "Payment not found";
-                            case (#userNotFound) "User not found";
+                            // Add other cases based on the actual error variants provided by the ICRC1 library
+                            case (_) "Unknown error"; // Generic catch-all for other errors
                         };
-                        Debug.print("Payment error: " # errorMessage);
+                        Debug.print("MAIN: Payment error: " # errorMessage);
                         return false;
                     };
                 }
             };
             case (_) {
-                Debug.print("App not initialized");
+                Debug.print("MAIN: App not initialized");
                 return false;
             }
         }
     };
+
+
+    // Function to list all users
+    public query func listUsers(): async [UserId] {
+        return users;
+    };
+    
 
 }

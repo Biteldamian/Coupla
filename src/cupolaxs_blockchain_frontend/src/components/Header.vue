@@ -29,6 +29,7 @@
 <style scoped>
 
 </style>
-<script setup lang="ts">
-import Login from "@/components/Login.vue";
+<script setup>
+import Login  from "@/components/Login.vue";
+
 </script>

@@ -8,7 +8,7 @@ module {
   public type UserId = Principal;
   public type User = {
     id: UserId;
-    balance: Balance;
+    var balance: Balance; // Make balance mutable
     name: Text;
   };
 

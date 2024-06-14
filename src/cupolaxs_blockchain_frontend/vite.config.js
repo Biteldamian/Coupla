@@ -4,7 +4,7 @@ import environment from 'vite-plugin-environment';
 import vue from '@vitejs/plugin-vue';
 import dotenv from 'dotenv';
 
-
+// Load environment variables from the .env file
 dotenv.config({ path: '../../.env' });
 
 export default defineConfig({
@@ -38,7 +38,6 @@ export default defineConfig({
     alias: [
       { find: 'declarations', replacement: fileURLToPath(new URL('../declarations', import.meta.url)) },
       { find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
-    ]
-  }
-  
+    ],
+  },
 });

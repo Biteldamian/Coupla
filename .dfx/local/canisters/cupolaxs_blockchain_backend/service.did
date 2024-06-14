@@ -20,7 +20,7 @@ type BookingStatus =
 service : {
   addCell: (Cell) -> ();
   addUser: (principal) -> ();
-  bookCell: (UserId, CellId, int) -> (bool);
+  bookCell: (principal, nat, text) -> (bool);
   checkCell: (CellId) -> (opt Cell) query;
   deployAll: () -> ();
   deployApp: () -> ();
@@ -30,6 +30,7 @@ service : {
   getTokenBalance: (UserId) -> (nat);
   isReady: () -> (bool) query;
   listCells: () -> (vec Cell) query;
+  listUsers: () -> (vec UserId) query;
   makePayment: (UserId, UserId, nat) -> (bool);
   mintTokens: (UserId, nat) -> (bool);
   registerUser: (principal) -> (bool);
